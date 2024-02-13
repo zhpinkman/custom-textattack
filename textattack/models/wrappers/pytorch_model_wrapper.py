@@ -41,7 +41,7 @@ class PyTorchModelWrapper(ModelWrapper):
             text_input_list,
             padding="max_length",
             truncation=True,
-            max_length=512,
+            max_length=64,
             return_tensors="pt",
         )
         ids = inputs["input_ids"]
