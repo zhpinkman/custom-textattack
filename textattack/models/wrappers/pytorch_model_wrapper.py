@@ -3,9 +3,9 @@ PyTorch Model Wrapper
 --------------------------
 """
 
-
 import torch
 from torch.nn import CrossEntropyLoss
+from IPython import embed
 
 import textattack
 
@@ -37,12 +37,22 @@ class PyTorchModelWrapper(ModelWrapper):
 
     def __call__(self, text_input_list, batch_size=32):
         model_device = next(self.model.parameters()).device
-        ids = self.tokenizer(text_input_list)
-        ids = torch.tensor(ids).to(model_device)
+        inputs = self.tokenizer(
+            text_input_list,
+            padding="max_length",
+            truncation=True,
+            max_length=512,
+            return_tensors="pt",
+        )
+        ids = inputs["input_ids"]
+        attention = inputs["attention_mask"]
+
+        ids = ids.to(model_device)
+        attention = attention.to(model_device)
 
         with torch.no_grad():
             outputs = textattack.shared.utils.batch_model_predict(
-                self.model, ids, batch_size=batch_size
+                self.model, [ids, attention], batch_size=batch_size
             )
 
         return outputs

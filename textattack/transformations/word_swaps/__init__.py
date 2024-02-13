@@ -21,6 +21,7 @@ from .word_swap_masked_lm import WordSwapMaskedLM
 from .word_swap_qwerty import WordSwapQWERTY
 from .word_swap_contract import WordSwapContract
 from .word_swap_extend import WordSwapExtend
+from .word_noise_extend import WordNoiseExtend
 from .word_swap_change_number import WordSwapChangeNumber
 from .word_swap_change_location import WordSwapChangeLocation
 from .word_swap_change_name import WordSwapChangeName

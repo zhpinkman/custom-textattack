@@ -18,11 +18,23 @@ from textattack.goal_functions import (
 from . import logger
 
 # A list of goal functions and the corresponding available models.
+# MODELS_BY_GOAL_FUNCTIONS = {
+#     (TargetedClassification, UntargetedClassification, InputReduction): [
+#         r"^textattack.models.helpers.lstm_for_classification.*",
+#         r"^textattack.models.helpers.word_cnn_for_classification.*",
+#         r"^transformers.modeling_\w*\.\w*ForSequenceClassification$",
+#     ],
+#     (NonOverlappingOutput, MinimizeBleu,): [
+#         r"^textattack.models.helpers.t5_for_text_to_text.*",
+#     ],
+# }
+
 MODELS_BY_GOAL_FUNCTIONS = {
     (TargetedClassification, UntargetedClassification, InputReduction): [
         r"^textattack.models.helpers.lstm_for_classification.*",
         r"^textattack.models.helpers.word_cnn_for_classification.*",
         r"^transformers.modeling_\w*\.\w*ForSequenceClassification$",
+        r"transformers.models.\w*.modeling_\w*.\w*ForSequenceClassification"
     ],
     (NonOverlappingOutput, MinimizeBleu,): [
         r"^textattack.models.helpers.t5_for_text_to_text.*",

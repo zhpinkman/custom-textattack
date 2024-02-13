@@ -1,53 +1,62 @@
 """
-CheckList:
-=========================
 
-(Beyond Accuracy: Behavioral Testing of NLP models with CheckList)
+TextBugger
+===============
+
+(TextBugger: Generating Adversarial Text Against Real-world Applications)
 
 """
+
 from textattack import Attack
-from textattack.constraints.pre_transformation import RepeatModification
-from textattack.goal_functions import UntargetedClassification
-from textattack.search_methods import GreedySearch
-from textattack.transformations import (
-    CompositeTransformation,
-    WordSwapChangeLocation,
-    WordSwapChangeName,
-    WordSwapChangeNumber,
-    WordSwapContract,
-    WordSwapExtend,
+from textattack.constraints.pre_transformation import (
+    RepeatModification,
+    StopwordModification,
 )
+from textattack.constraints.semantics.sentence_encoders import UniversalSentenceEncoder
+from textattack.goal_functions import UntargetedClassification
+from textattack.search_methods import GreedyWordSwapWIR
+from textattack.transformations import CompositeTransformation, WordNoiseExtend
 
 from .attack_recipe import AttackRecipe
 
 
 class CheckList2020(AttackRecipe):
-    """An implementation of the attack used in "Beyond Accuracy: Behavioral
-    Testing of NLP models with CheckList", Ribeiro et al., 2020.
+    """Li, J., Ji, S., Du, T., Li, B., and Wang, T. (2018).
 
-    This attack focuses on a number of attacks used in the Invariance Testing
-    Method: Contraction, Extension, Changing Names, Number, Location
+    TextBugger: Generating Adversarial Text Against Real-world Applications.
 
-    https://arxiv.org/abs/2005.04118
+    https://arxiv.org/abs/1812.05271
     """
 
     @staticmethod
-    def build(model_wrapper):
+    def build(model_wrapper, type_of_noise):
+        #
+        #  we propose five bug generation methods for TEXTBUGGER:
+        #
         transformation = CompositeTransformation(
             [
-                WordSwapExtend(),
-                WordSwapContract(),
-                WordSwapChangeName(),
-                WordSwapChangeNumber(),
-                WordSwapChangeLocation(),
+                WordNoiseExtend(type_of_noise),
             ]
         )
 
-        # Need this constraint to prevent extend and contract modifying each others' changes and forming infinite loop
-        constraints = [RepeatModification()]
-
-        # Untargeted attack & GreedySearch
+        constraints = [RepeatModification(), StopwordModification()]
+        # In our experiment, we first use the Universal Sentence
+        # Encoder [7], a model trained on a number of natural language
+        # prediction tasks that require modeling the meaning of word
+        # sequences, to encode sentences into high dimensional vectors.
+        # Then, we use the cosine similarity to measure the semantic
+        # similarity between original texts and adversarial texts.
+        # ... "Furthermore, the semantic similarity threshold \eps is set
+        # as 0.8 to guarantee a good trade-off between quality and
+        # strength of the generated adversarial text."
+        constraints.append(UniversalSentenceEncoder(threshold=0.8))
+        #
+        # Goal is untargeted classification
+        #
         goal_function = UntargetedClassification(model_wrapper)
-        search_method = GreedySearch()
+        #
+        # Greedily swap words with "Word Importance Ranking".
+        #
+        search_method = GreedyWordSwapWIR(wir_method="delete")
 
         return Attack(goal_function, constraints, transformation, search_method)

@@ -71,7 +71,7 @@ class TextBuggerLi2018(AttackRecipe):
                 # context-aware word vector space. Specifically, we use the pre-trained
                 # GloVe model [30] provided by Stanford for word embedding and set
                 # topk = 5 in the experiment.
-                WordSwapEmbedding(max_candidates=5),
+                # WordSwapEmbedding(max_candidates=5),
             ]
         )
 

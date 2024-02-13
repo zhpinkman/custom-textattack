@@ -234,7 +234,7 @@ def zip_flair_result(pred, tag_type="upos-fast"):
     for token in tokens:
         word_list.append(token.text)
         if "pos" in tag_type:
-            pos_list.append(token.annotation_layers["pos"][0]._value)
+            pos_list.append(token.annotation_layers["upos"][0]._value)
         elif tag_type == "ner":
             pos_list.append(token.get_label("ner"))
 
