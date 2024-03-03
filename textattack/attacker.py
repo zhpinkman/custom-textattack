@@ -591,6 +591,9 @@ def attack_from_queue(
                 result = attack.attack(example, ground_truth_output)
                 out_queue.put((i, result))
         except Exception as e:
+            print("Exception in worker process: 594 in attacker.py")
+            print(e)
+            continue
             if isinstance(e, queue.Empty):
                 continue
             else:
