@@ -6,6 +6,7 @@ PyTorch Model Wrapper
 import torch
 from torch.nn import CrossEntropyLoss
 from IPython import embed
+import os
 
 import textattack
 
@@ -37,11 +38,12 @@ class PyTorchModelWrapper(ModelWrapper):
 
     def __call__(self, text_input_list, batch_size=32):
         model_device = next(self.model.parameters()).device
+        max_length_to_use = os.environ.get("TEXTATTACK_MAX_LENGTH")
         inputs = self.tokenizer(
             text_input_list,
             padding="max_length",
             truncation=True,
-            max_length=64,
+            max_length=max_length_to_use,
             return_tensors="pt",
         )
         ids = inputs["input_ids"]

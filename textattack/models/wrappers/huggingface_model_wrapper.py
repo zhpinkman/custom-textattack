@@ -98,12 +98,20 @@ class HuggingFaceModelWrapper(PyTorchModelWrapper):
 
         self.model.zero_grad()
         model_device = next(self.model.parameters()).device
+
+        max_length = (
+            512
+            if self.tokenizer.model_max_length == int(1e30)
+            else self.tokenizer.model_max_length
+        )
+
         input_dict = self.tokenizer(
             [text_input],
             add_special_tokens=True,
             return_tensors="pt",
             padding="max_length",
             truncation=True,
+            max_length=max_length,
         )
         input_dict.to(model_device)
         predictions = self.model(**input_dict).logits
