@@ -38,7 +38,7 @@ class PyTorchModelWrapper(ModelWrapper):
 
     def __call__(self, text_input_list, batch_size=32):
         model_device = next(self.model.parameters()).device
-        max_length_to_use = os.environ.get("TEXTATTACK_MAX_LENGTH")
+        max_length_to_use = int(os.environ.get("TEXTATTACK_MAX_LENGTH"))
         inputs = self.tokenizer(
             text_input_list,
             padding="max_length",
